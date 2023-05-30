@@ -1,37 +1,42 @@
 import React from "react";
-import { Dimensions, StyleSheet, Button, Image, View, Pressable, Text, } from "react-native";
+import { Dimensions, StyleSheet, Button, Image, View, Pressable, Text, ToastAndroid } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
     container: {
-        height: 100,
-        width: width,
-        backgroundColor: "#22577a",
+        
     },
 
     button: {
-        height: 50,
         width: 50,
+        height: 50,
+        borderRadius: 50,
+        backgroundColor: "#ff0000",
+    },
+
+    img: {
+        width: 50,
+        height: 50,
     },
 });
 
 function Header() {
     return (
-        <View style={styles.container}>
-            <AccountBtn />
+        <View >
+            <User />
         </View>
     );
 }
 
-class AccountBtn extends React.Component {
-    render() {
+function User() {
+    const onPress = () => {
+        ToastAndroid.show("Kliknięto przycisk!", ToastAndroid.SHORT);
+    };
 
-        return (
-            <Pressable style={styles.button}>
-                <Text>Kliknij</Text>
-            </Pressable>
-        );
-    }
+    return (
+        <Pressable className={"userButton"} style={styles.button} onLongPress={onPress}>
+        </Pressable>
+    );
 }
 
 export { Header };
