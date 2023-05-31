@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import { Header } from "./components/Header";
-import styles from "./scss/app.scss";
+
 export default function App() {
     return (
         <View style={styles.container}>
@@ -9,9 +9,10 @@ export default function App() {
     );
 }
 
-const Appstyles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: "#38asr3a5",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "#38a3a5",
     },
 });
