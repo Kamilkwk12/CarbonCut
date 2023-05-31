@@ -1,18 +1,12 @@
-import { StyleSheet, Text, View, Button } from "react-native";
-import { Header } from "./components/Header";
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import HomeNavigator from "./navigatior/Navigator";
+
 
 export default function App() {
     return (
-        <View style={styles.container}>
-            <Header />
-        </View>
+        <NavigationContainer>
+            <HomeNavigator />
+        </NavigationContainer>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        width:"100%",
-        height:"100%",
-        backgroundColor: "#38a3a5",
-    },
-});

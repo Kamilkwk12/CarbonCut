@@ -1,15 +1,20 @@
 import React from "react";
+import { useCallback } from "react";
 import { Dimensions, StyleSheet, Button, Image, View, Pressable, Text, ToastAndroid } from "react-native";
-const { width, height } = Dimensions.get("window");
+import { useFonts, OpenSans_400Regular, OpenSans_300Light, OpenSans_700Bold } from "@expo-google-fonts/open-sans";
 
-function Header() {
+
+const Header = props => {
+
+    const usedFont = props.usedFont
+    console.log(usedFont);
     return (
         <View style={styles.view}>
             <UserProf />
             <UserName />
         </View>
     );
-}
+};
 
 function UserProf() {
     const onPress = () => {
@@ -29,33 +34,32 @@ function UserName() {
     };
 
     return (
-    
         <Pressable onPress={onPress}>
-            <Text>Kamil Kwiatkowski</Text>
+            <Text style={styles.text}>Kamil Kwiatkowski</Text>
         </Pressable>
     );
 }
 
+export { Header };
+
 const styles = StyleSheet.create({
     view: {
-        backgroundColor: "red",
         flexDirection: "row",
-        alignItems:"center",
-        
+        alignItems: "center",
     },
     button: {
         width: 50,
         height: 50,
-        backgroundColor: "red",
         borderRadius: 50,
         overflow: "hidden",
         margin: 10,
     },
+    text: {
+        fontFamily: {usedFont},
 
+    },  
     img: {
         width: 50,
         height: 50,
     },
 });
-
-export { Header };
