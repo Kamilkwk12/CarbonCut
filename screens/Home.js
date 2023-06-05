@@ -5,7 +5,6 @@ import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
-import { Svg, Circle } from "react-native-svg";
 import { PieChart } from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCar } from "@fortawesome/free-solid-svg-icons";
@@ -38,6 +37,14 @@ const Home = () => {
                 <TopPanel />
                 <StatusBar backgroundColor={colors.darkGreen} />
                 <UsageChart />
+                <ScrollView contentContainerStyle={{ alignItems: "center", marginTop: 10 }}>
+                    <Activity />
+                    <Activity />
+                    <Activity />
+                    <Activity />
+                    <Activity />
+                    <Activity />
+                </ScrollView>
             </ImageBackground>
         </View>
     );
@@ -71,14 +78,7 @@ const TopPanel = () => {
 
 const UsageChart = () => {
     const chartConfig = {
-        backgroundGradientFrom: "#1E2923",
-        backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: "#08130D",
-        backgroundGradientToOpacity: 0.5,
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
-        barPercentage: 1,
-        useShadowColorFromDataset: false, // optional
     };
 
     const data = [
@@ -140,6 +140,18 @@ const UsageChart = () => {
     );
 };
 
+const Activity = () => {
+    return (
+        <View style={styles.activity}>
+            <FontAwesomeIcon icon={faCar} color={colors.creamWhite} size={50} />
+            <View style={styles.ativityText}>
+                <Text style={[styles.activityTitle, styles.nova]}>JAZDA AUTEM/PALIWO</Text>
+                <Text style={[styles.activityDetails, styles.nova]}>Przejechano 15km - 3l paliwa</Text>
+                <Text style={[styles.activityDate, styles.nova]}>Dzisiaj 15:53</Text>
+            </View>
+        </View>
+    );
+};
 
 
 const colors = {
@@ -220,5 +232,28 @@ const styles = StyleSheet.create({
     chartSummary: {
         color: "white",
         fontSize: 46,
+    },
+    activity: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-around",
+        margin: 10,
+        backgroundColor: colors.backgroundDark,
+        width: w - 50,
+        height: 100,
+        padding: 10,
+        borderRadius: 15,
+    },
+    activityIcon: {
+        colors: colors.creamWhite,
+    },
+    activityTitle: {
+        color: "white",
+    },
+    activityDetails: {
+        color: "white",
+    },
+    activityDate: {
+        color: "#979797",
     },
 });
