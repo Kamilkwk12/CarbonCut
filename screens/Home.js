@@ -8,7 +8,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { PieChart } from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCar, faBars, faLeaf, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { Circle, Svg } from "react-native-svg";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
