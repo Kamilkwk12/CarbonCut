@@ -7,7 +7,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import { PieChart } from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCar } from "@fortawesome/free-solid-svg-icons";
+import { faCar, faBars, faLeaf, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Circle, Svg } from "react-native-svg";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
@@ -45,6 +46,8 @@ const Home = () => {
                     <Activity />
                     <Activity />
                 </ScrollView>
+                <View style={{ height: 90 }}></View>
+                <NavBar />
             </ImageBackground>
         </View>
     );
@@ -121,7 +124,7 @@ const UsageChart = () => {
 
     return (
         <View style={styles.chartView}>
-            <Text style={[styles.chartHeader, styles.nova]}>W tym miesiącu zużył{Gender(g)}ś</Text>
+            <Text style={[styles.chartHeader, styles.nova]}>W tym miesiącu wygenerował{Gender(g)}ś</Text>
             <Text style={[styles.chartSummary, styles.monoton]}>
                 {carbonUsage}KG CO<Text style={{ fontSize: 28 }}>2</Text>
             </Text>
@@ -142,17 +145,39 @@ const UsageChart = () => {
 
 const Activity = () => {
     return (
-        <View style={styles.activity}>
-            <FontAwesomeIcon icon={faCar} color={colors.creamWhite} size={50} />
-            <View style={styles.ativityText}>
-                <Text style={[styles.activityTitle, styles.nova]}>JAZDA AUTEM/PALIWO</Text>
-                <Text style={[styles.activityDetails, styles.nova]}>Przejechano 15km - 3l paliwa</Text>
-                <Text style={[styles.activityDate, styles.nova]}>Dzisiaj 15:53</Text>
-            </View>
-        </View>
+        <LinearGradient style={styles.activityBorder} colors={[colors.green, colors.background, "white"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <ImageBackground blurRadius={12}>
+                <Pressable style={styles.activity} opacity={0.95}>
+                    <FontAwesomeIcon icon={faCar} color={colors.creamWhite} size={50} />
+                    <View style={styles.ativityText}>
+                        <Text style={[styles.activityTitle, styles.nova]}>JAZDA AUTEM/PALIWO</Text>
+                        <Text style={[styles.activityDetails, styles.nova]}>Przejechano 15km - 3l paliwa</Text>
+                        <Text style={[styles.activityDate, styles.nova]}>Dzisiaj 15:53</Text>
+                    </View>
+                </Pressable>
+            </ImageBackground>
+        </LinearGradient>
     );
 };
 
+const NavBar = () => {
+    return (
+        <View style={styles.navBar}>
+            <Pressable>
+                <FontAwesomeIcon icon={faBars} size={30} color={colors.creamWhite} />
+            </Pressable>
+            <Pressable style={{ alignItems: "center", bottom: 20 }}>
+                <LinearGradient colors={[colors.green, colors.background]} style={styles.addBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1.4 }}>
+                    <FontAwesomeIcon icon={faPlus} size={40} color={colors.creamWhite} />
+                </LinearGradient>
+                <Text style={[styles.addBtnText, styles.nova]}>Dodaj aktywność</Text>
+            </Pressable>
+            <Pressable>
+                <FontAwesomeIcon icon={faLeaf} size={30} color={colors.creamWhite} />
+            </Pressable>
+        </View>
+    );
+};
 
 const colors = {
     background: "#1f1f1f",
@@ -174,7 +199,6 @@ const styles = StyleSheet.create({
     },
     container: { flex: 1 },
     treeBg: {
-        // position: "relative",
         backgroundColor: colors.background,
         bottom: 0,
         height: h,
@@ -226,23 +250,27 @@ const styles = StyleSheet.create({
 
     chartHeader: {
         color: "white",
-        fontSize: 23,
+        fontSize: 20,
     },
 
     chartSummary: {
         color: "white",
         fontSize: 46,
     },
+    activityBorder: {
+        borderRadius: 14,
+        marginVertical: 5,
+    },
     activity: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-around",
-        margin: 10,
+        margin: 2,
         backgroundColor: colors.backgroundDark,
         width: w - 50,
         height: 100,
         padding: 10,
-        borderRadius: 15,
+        borderRadius: 13,
     },
     activityIcon: {
         colors: colors.creamWhite,
@@ -255,5 +283,29 @@ const styles = StyleSheet.create({
     },
     activityDate: {
         color: "#979797",
+    },
+    navBar: {
+        position: "absolute",
+        bottom: 0,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center",
+        backgroundColor: colors.backgroundDark,
+        width: w,
+        height: 90,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingHorizontal: 20,
+    },
+    addBtn: {
+        alignItems: "center",
+        justifyContent: "center",
+        width: 60,
+        height: 60,
+        borderRadius: 50,
+        marginBottom: 10,
+    },
+    addBtnText: {
+        color: "white",
     },
 });
