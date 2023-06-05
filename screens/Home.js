@@ -1,21 +1,24 @@
 import React from "react";
 import { useCallback } from "react";
-import { StyleSheet, Text, View, Pressable, StatusBar, SafeAreaView, Image, ToastAndroid, Dimensions } from "react-native";
-import { useFonts, OpenSans_400Regular, OpenSans_300Light, OpenSans_700Bold } from "@expo-google-fonts/open-sans";
+import { StyleSheet, Text, View, Pressable, StatusBar, Image, ToastAndroid, Dimensions, ImageBackground, FlatList, ScrollView } from "react-native";
+import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
+import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
+import { LinearGradient } from "expo-linear-gradient";
+import { Svg, Circle } from "react-native-svg";
+import { PieChart } from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPlus, faBars, faLeaf} from "@fortawesome/free-solid-svg-icons/";
-
+import { faCar } from "@fortawesome/free-solid-svg-icons";
 
 const w = Dimensions.get("window").width;
+const h = "100%";
 
 const Home = () => {
     SplashScreen.preventAutoHideAsync();
 
     const [fontsLoaded] = useFonts({
-        OpenSans_400Regular,
-        OpenSans_300Light,
-        OpenSans_700Bold,
+        Monoton_400Regular,
+        NovaRound_400Regular,
     });
 
     const onLayoutRootView = useCallback(async () => {
@@ -27,192 +30,195 @@ const Home = () => {
         return null;
     }
 
+    const bgUri = "../assets/bgMain.png";
+
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.container} onLayout={onLayoutRootView}>
-                <StatusBar backgroundColor={colors.darkGreen} />
+        <View onLayout={onLayoutRootView}>
+            <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
                 <TopPanel />
-                <NavBar />
-            </View>
-        </SafeAreaView>
+                <StatusBar backgroundColor={colors.darkGreen} />
+                <UsageChart />
+            </ImageBackground>
+        </View>
     );
 };
 
 export default Home;
 
 const TopPanel = () => {
-    return (
-        <View style={styles.topPanel}>
-            <UserPressable />
-            <BurgerIcon />
-        </View>
-    );
-};
-
-const UserPressable = () => {
     const onPress = () => {
         ToastAndroid.show("Kliknięto panel użytkownika!", ToastAndroid.SHORT);
     };
-
+    const uri = "../assets/captionLogoWhite10p.png";
+    const profUri = "../assets/prof.jpg";
+    const userName = "Kamil Kwiatkowski";
     return (
-        <Pressable style={styles.userPressable} onPress={onPress}>
-            <Image source={require("../assets/prof.jpg")} style={styles.img}></Image>
-            <View>
-                <Text style={[styles.fontN, styles.greeting]}>Witaj</Text>
-                <Text style={[styles.userName, styles.fontB]}>Kamil Kwiatkowski</Text>
-            </View>
-        </Pressable>
-    );
-};
-
-const BurgerIcon = () => {
-    const onPress = () => {
-        ToastAndroid.show("Kliknięto burger ikonke!", ToastAndroid.SHORT);
-    };
-
-    return (
-        <Pressable style={styles.burgerIcon} onPress={onPress}>
-            <FontAwesomeIcon icon={faBars} size={40} style={{ marginRight: 30 }} color={colors.main} />
-        </Pressable>
-    );
-};
-
-const NavBar = () => {
-    return (
-        <View style={styles.navBar}>
-            <View style={styles.btnView}>
-                <InfoBtn />
-            </View>
-            <View style={styles.btnView}>
-                <PlusBtn />
-                <Text style={[styles.btnCaption, styles.fontB]}>Dodaj</Text>
-            </View>
-            <View style={styles.btnView}>
-                <Btn />
-
-            </View>
+        <View>
+            <ImageBackground source={require(uri)} style={styles.topPanel}>
+                <Pressable style={styles.userPressable} onPress={onPress}>
+                    <LinearGradient colors={[colors.green, "white"]} style={styles.imgBg} start={[0.1, 0.5]}>
+                        <Image source={require(profUri)} style={styles.img}></Image>
+                    </LinearGradient>
+                    <View>
+                        <Text style={[styles.topPanelText, styles.greeting, styles.nova]}>Witaj,</Text>
+                        <Text style={[styles.topPanelText, styles.userName, styles.nova]}>{userName}</Text>
+                    </View>
+                </Pressable>
+            </ImageBackground>
         </View>
     );
 };
 
-const PlusBtn = () => {
-    const onPress = () => {
-        ToastAndroid.show("Kliknięto plus ikonke!", ToastAndroid.SHORT);
+const UsageChart = () => {
+    const chartConfig = {
+        backgroundGradientFrom: "#1E2923",
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: "#08130D",
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2, // optional, default 3
+        barPercentage: 1,
+        useShadowColorFromDataset: false, // optional
     };
 
+    const data = [
+        {
+            name: "Seoul",
+            population: 120,
+            color: colors.tomatoRed,
+            legendFontColor: colors.creamWhite,
+            legendFontSize: 15,
+        },
+        {
+            name: "Beijing",
+            population: 52,
+            color: colors.green,
+            legendFontColor: colors.creamWhite,
+            legendFontSize: 15,
+        },
+        {
+            name: "New York",
+            population: 850,
+            color: colors.royalBlue,
+            legendFontColor: colors.creamWhite,
+            legendFontSize: 15,
+        },
+        {
+            name: "Moscow",
+            population: 110,
+            color: colors.lightGreen,
+            legendFontColor: colors.creamWhite,
+            legendFontSize: 15,
+        },
+    ];
+
+    const g = "M";
+    const Gender = g => {
+        return g === "M" ? "e" : "a";
+    };
+
+    const carbonUsage = "340,6";
+
     return (
-        <Pressable style={styles.plusBtn} onPress={onPress}>
-            <FontAwesomeIcon icon={faPlus} size={40} color={colors.yellow} />
-        </Pressable>
+        <View style={styles.chartView}>
+            <Text style={[styles.chartHeader, styles.nova]}>W tym miesiącu zużył{Gender(g)}ś</Text>
+            <Text style={[styles.chartSummary, styles.monoton]}>
+                {carbonUsage}KG CO<Text style={{ fontSize: 28 }}>2</Text>
+            </Text>
+
+            <PieChart
+                data={data}
+                width={w}
+                height={220}
+                chartConfig={chartConfig}
+                accessor={"population"}
+                backgroundColor={"transparent"}
+                center={[10, 10]}
+                absolute
+            />
+        </View>
     );
 };
 
-const InfoBtn = () => {
-    const onPress = () => {
-        ToastAndroid.show("Kliknięto info ikonke!", ToastAndroid.SHORT);
-    };
 
-    return (
-        <Pressable style={styles} onPress={onPress}>
-            <FontAwesomeIcon icon={faPlus} size={40} color={colors.darkGreen} />
-        </Pressable>
-    );
-};
-const Btn = () => {
-    const onPress = () => {
-        ToastAndroid.show("Kliknięto info ikonke!", ToastAndroid.SHORT);
-    };
-
-    return (
-        <Pressable style={styles} onPress={onPress}>
-            <FontAwesomeIcon icon={faLeaf} size={40} color={colors.darkGreen} />
-        </Pressable>
-    );
-};
 
 const colors = {
-    main: "#f1f7ed",
-    lightGreen: "#e0eec6",
-    darkGreen: "#243e36",
-    green: "#7ca982",
-    yellow: "#c2a83e",
-    navBar: "#dad7cd",
+    background: "#1f1f1f",
+    backgroundDark: "#181818",
+    topPanel: "#181818",
+    green: "#489A2E",
+    lightGreen: "#61C378",
+    tomatoRed: "#BC4749",
+    creamWhite: "#E8E5DA",
+    royalBlue: "#48639C",
 };
 
 const styles = StyleSheet.create({
-    fontL: {
-        fontFamily: "OpenSans_300Light",
+    monoton: {
+        fontFamily: "Monoton_400Regular",
     },
-    fontN: {
-        fontFamily: "OpenSans_400Regular",
+    nova: {
+        fontFamily: "NovaRound_400Regular",
     },
-    fontB: {
-        fontFamily: "OpenSans_700Bold",
-    },
-    container: {
-        flex: 1,
-        backgroundColor: colors.main,
+    container: { flex: 1 },
+    treeBg: {
+        // position: "relative",
+        backgroundColor: colors.background,
+        bottom: 0,
+        height: h,
     },
     topPanel: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         width: w,
-        height: "15%",
-        backgroundColor: colors.darkGreen,
+        height: 110,
+        backgroundColor: colors.topPanel,
         borderBottomEndRadius: 20,
         borderBottomStartRadius: 20,
     },
-    userPressable: {
-        width: "70%",
-        flexDirection: "row",
-        alignItems: "center",
+    topPanelText: {
+        color: "white",
     },
     greeting: {
-        color: colors.main,
+        fontSize: 15,
     },
     userName: {
-        color: colors.lightGreen,
-        fontSize: 18,
+        fontSize: 20,
+        letterSpacing: 1.2,
+        lineHeight: 34,
     },
     img: {
-        borderWidth: 3,
-        borderColor: colors.lightGreen,
-        marginLeft: 20,
-        marginRight: 15,
         width: 55,
         height: 55,
         borderRadius: 55,
     },
-
-    navBar: {
-        position: "absolute",
-        bottom: 0,
-        right: 0,
-        left: 0,
-        flexDirection: "row",
-        justifyContent: "space-around",
-
-        margin: 20,
-        borderRadius: 20,
-        height: 110,
-        backgroundColor: colors.navBar,
-    },
-    plusBtn: {
+    imgBg: {
+        marginLeft: 20,
+        marginRight: 18,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.darkGreen,
         width: 60,
         height: 60,
         borderRadius: 50,
     },
-    btnCaption: {
-        textTransform: "uppercase",
-        color: colors.darkGreen,
-    },
-    btnView: {
-        flexDirection: "column",
+
+    userPressable: {
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-evenly",
+    },
+    chartView: {
+        marginTop: 25,
+        alignItems: "center",
+    },
+
+    chartHeader: {
+        color: "white",
+        fontSize: 23,
+    },
+
+    chartSummary: {
+        color: "white",
+        fontSize: 46,
     },
 });
