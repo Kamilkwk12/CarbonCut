@@ -35,12 +35,8 @@ const Home = () => {
         <View onLayout={onLayoutRootView}>
             <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
                 <TopPanel />
-                <StatusBar backgroundColor={colors.darkGreen} />
-                <UsageChart />
-                <ScrollView contentContainerStyle={{ alignItems: "center", marginTop: 10 }}>
-                    <Activity />
-                    <Activity />
-                    <Activity />
+                <ScrollView contentContainerStyle={{ alignItems: "center" }}>
+                    <UsageChart/>
                     <Activity />
                     <Activity />
                     <Activity />
@@ -243,7 +239,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     chartView: {
-        marginTop: 25,
+        marginVertical: 20,
         alignItems: "center",
     },
 

@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { useCallback } from "react";
-import { ImageBackground, View, StyleSheet, Dimensions, Image, Text, TextInput, Pressable } from "react-native";
+import { ImageBackground, View, StyleSheet, Dimensions, Image, Text, TextInput, Pressable, Button, Alert } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
 
-const Login = ({ navigaton }) => {
+const Login = ({ navigation }) => {
+    const [login, getLogin] = useState();
+    const [password, getPassword] = useState();
+    const [isHidden, setHide] = useState(true);
+
     SplashScreen.preventAutoHideAsync();
 
     const [fontsLoaded] = useFonts({
@@ -26,7 +32,15 @@ const Login = ({ navigaton }) => {
         return null;
     }
 
-    
+    const onPressHandler = () => {
+        if (login === undefined || login == "" || password == "" || password === undefined) {
+            Alert.alert("Błąd", "Uzupełnij wszystkie pola")
+        } else {
+            navigation.navigate("Home");
+        }
+    };
+
+    const formBgUri = "../assets/formBg.png";
 
     const bgUri = "../assets/bgLogin.png";
     const logoUri = "../assets/captionLogoWhite.png";
@@ -35,50 +49,51 @@ const Login = ({ navigaton }) => {
             <ImageBackground source={require(bgUri)} style={styles.treeBg} opacity={0.2}>
                 <Image source={require(logoUri)} style={styles.mainLogo} resizeMode="contain" />
                 <Text style={[styles.slogan, styles.monoton]}>Zminimalizuj swój ślad węglowy już dzisiaj!</Text>
-                <Form nav={navigaton}/>
+                <LinearGradient
+                    style={styles.loginBorder}
+                    colors={[colors.green, colors.backgroundDark]}
+                    start={{ x: 1, y: 1 }}
+                    end={{ x: 1, y: 0.0 }}
+                >
+                    <ImageBackground source={require(formBgUri)} style={styles.login}>
+                        <Text style={[styles.loginHeader, styles.monoton]}>ZALOGUJ SIĘ</Text>
+                        <TextInput
+                            editable
+                            placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
+                            placeholder="Login"
+                            style={styles.input}
+                            value={login}
+                            onChangeText={login => getLogin(login)}
+                        />
+                        <View>
+                            <TextInput
+                                editable
+                                placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
+                                placeholder="Hasło"
+                                style={styles.input}
+                                value={password}
+                                onChangeText={password => getPassword(password)}
+                                secureTextEntry={isHidden ? true : false}
+                            />
+                            <Pressable
+                                style={styles.hidePass}
+                                onPress={() => {
+                                    setHide(value => !value);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={isHidden ? faEye : faEyeSlash} size={25} color="white" />
+                            </Pressable>
+                        </View>
+                        <Pressable style={[styles.btn, styles.loginBtn]} onPress={onPressHandler}>
+                            <Text style={[styles.monoton, { fontSize: 20 }]}>ZALOGUJ</Text>
+                        </Pressable>
+                        <Pressable style={[styles.btn, styles.forgotPass]}>
+                            <Text style={styles.nova}>Zapomniałem hasła</Text>
+                        </Pressable>
+                    </ImageBackground>
+                </LinearGradient>
             </ImageBackground>
         </View>
-    );
-};
-
-const Form = (nav) => {
-    const [login, getLogin] = useState();
-    const [password, getPassword] = useState();
-
-    const onPressHandler = () => {
-        nav.navigate("Home");
-    };
-
-    const bgUri = "../assets/formBg.png";
-    return (
-        <LinearGradient style={styles.loginBorder} colors={[colors.green, colors.backgroundDark]} start={{ x: 1, y: 1 }} end={{ x: 1, y: 0.0 }}>
-            <ImageBackground source={require(bgUri)} style={styles.login}>
-                <Text style={[styles.loginHeader, styles.monoton]}>ZALOGUJ SIĘ</Text>
-                <TextInput
-                    editable
-                    placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
-                    placeholder="Login"
-                    style={styles.input}
-                    value={login}
-                    onChangeText={login => getLogin(login)}
-                />
-                <TextInput
-                    editable
-                    placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
-                    placeholder="Hasło"
-                    style={styles.input}
-                    value={password}
-                    onChangeText={password => getPassword(password)}
-                />
-
-                <Pressable style={[styles.btn, styles.loginBtn]} onPress={onPressHandler}>
-                    <Text style={[styles.monoton, { fontSize: 20 }]}>ZALOGUJ</Text>
-                </Pressable>
-                <Pressable style={[styles.btn, styles.forgotPass]}>
-                    <Text style={styles.nova}>Zapomniałem hasła</Text>
-                </Pressable>
-            </ImageBackground>
-        </LinearGradient>
     );
 };
 
@@ -159,5 +174,11 @@ const styles = StyleSheet.create({
     forgotPass: {
         marginTop: 20,
         height: 35,
+    },
+    hidePass: {
+        position: "absolute",
+        right: 30,
+        bottom: 30,
+        padding: 10,
     },
 });
