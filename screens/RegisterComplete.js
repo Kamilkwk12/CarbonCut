@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { ImageBackground, View, StyleSheet, Text, Dimensions, Pressable } from "react-native";
+import { ImageBackground, View, StyleSheet, Text, Dimensions, Pressable, KeyboardAvoidingView } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
@@ -26,7 +26,7 @@ const RegisterComplete = ({ navigation }) => {
 
     const bgUri = "../assets/bgRegisterComplete.png";
     return (
-        <View onLayout={onLayoutRootView}>
+        <KeyboardAvoidingView onLayout={onLayoutRootView}>
             <ImageBackground source={require(bgUri)} style={styles.bg}>
                 <Text style={[styles.monoton, styles.title]}>Zarejestrowano pomyślnie!</Text>
                 <Pressable
@@ -38,7 +38,7 @@ const RegisterComplete = ({ navigation }) => {
                     <Text style={styles.nova}>Powrót do logowania</Text>
                 </Pressable>
             </ImageBackground>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 

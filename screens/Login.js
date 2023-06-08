@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
-import { ImageBackground, View, StyleSheet, Dimensions, Image, Text, TextInput, Pressable, Alert, Linking, StatusBar } from "react-native";
+import { ImageBackground, View, StyleSheet, Dimensions, Image, Text, TextInput, Pressable, Alert, Linking } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
-import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faFacebook, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -182,7 +181,6 @@ const styles = StyleSheet.create({
         padding: 3,
     },
     login: {
-        // backgroundColor: colors.creamWhite,
         alignItems: "center",
         overflow: "hidden",
         height: "100%",
