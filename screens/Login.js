@@ -8,6 +8,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
+import firestore from '@react-native-firebase/firestore';
+
+
+
+
 const w = Dimensions.get("window").width;
 const h = "100%";
 
@@ -34,7 +39,7 @@ const Login = ({ navigation }) => {
 
     const onPressHandler = () => {
         if (login === undefined || login == "" || password == "" || password === undefined) {
-            Alert.alert("Błąd", "Uzupełnij wszystkie pola")
+            Alert.alert("Błąd", "Uzupełnij wszystkie pola");
         } else {
             navigation.navigate("Home");
         }
