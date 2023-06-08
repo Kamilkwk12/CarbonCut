@@ -33,10 +33,11 @@ const Home = () => {
 
     return (
         <View onLayout={onLayoutRootView}>
+            <StatusBar />
             <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
                 <TopPanel />
                 <ScrollView contentContainerStyle={{ alignItems: "center" }}>
-                    <UsageChart/>
+                    <UsageChart />
                     <Activity />
                     <Activity />
                     <Activity />

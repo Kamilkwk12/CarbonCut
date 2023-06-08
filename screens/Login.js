@@ -1,23 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
-import { ImageBackground, View, StyleSheet, Dimensions, Image, Text, TextInput, Pressable, Button, Alert, Linking } from "react-native";
+import { ImageBackground, View, StyleSheet, Dimensions, Image, Text, TextInput, Pressable, Alert, Linking, StatusBar } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
-import firestore from "@react-native-firebase/firestore";
 import { faFacebook, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { db } from "../FirebaseSetup";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
 
 const Login = ({ navigation }) => {
-    let [login, getLogin] = useState();
-    let [password, getPassword] = useState();
-    let [isHidden, setHide] = useState(true);
+    const [userCredentials, setUserCredentials] = useState({ login: "", password: "" });
+    const [userDb, setUserDb] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [isHidden, setHide] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        const usersQuery = collection(db, "users");
+        onSnapshot(usersQuery, snapshot => {
+            let usersList = [];
+            snapshot.docs.map(doc => usersList.push({ ...doc.data(), id: doc.id }));
+            setUserDb(usersList);
+
+            setLoading(false);
+        });
+    }, []);
 
     SplashScreen.preventAutoHideAsync();
 
@@ -36,13 +49,17 @@ const Login = ({ navigation }) => {
     }
 
     const loginOnPress = () => {
-        if (login === undefined || login == "" || password == "" || password === undefined) {
-            Alert.alert("Błąd", "Uzupełnij wszystkie pola");
+        const result = userDb.find(({ login }) => login === userCredentials.login);
+        if (result !== undefined) {
+            if (result.password === userCredentials.password) {
+                navigation.navigate("Home");
+            } else {
+                Alert.alert("Błąd", "Nieprawidłowe hasło");
+            }
         } else {
-            navigation.navigate("Home");
+            Alert.alert("Błąd", "Nie znaleziono takiego loginu");
         }
     };
-
 
     const bgUri = "../assets/bgLogin.png";
     const logoUri = "../assets/captionLogoWhite.png";
@@ -58,8 +75,8 @@ const Login = ({ navigation }) => {
                     placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
                     placeholder="Login"
                     style={styles.input}
-                    value={login}
-                    onChangeText={login => getLogin(login)}
+                    value={userCredentials.login}
+                    onChangeText={text => setUserCredentials({ ...userCredentials, login: text })}
                 />
                 <View>
                     <TextInput
@@ -67,8 +84,8 @@ const Login = ({ navigation }) => {
                         placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
                         placeholder="Hasło"
                         style={styles.input}
-                        value={password}
-                        onChangeText={password => getPassword(password)}
+                        value={userCredentials.password}
+                        onChangeText={text => setUserCredentials({ ...userCredentials, password: text })}
                         secureTextEntry={isHidden ? true : false}
                     />
                     <Pressable
@@ -82,9 +99,6 @@ const Login = ({ navigation }) => {
                 </View>
                 <Pressable style={[styles.btn, styles.loginBtn]} onPress={loginOnPress}>
                     <Text style={[styles.monoton, { fontSize: 20 }]}>ZALOGUJ</Text>
-                </Pressable>
-                <Pressable style={[styles.btn, styles.forgotPass]}>
-                    <Text style={styles.nova}>Zapomniałem hasła</Text>
                 </Pressable>
                 <View style={{ flexDirection: "row", marginTop: 25 }}>
                     <Text style={[styles.nova, { color: colors.creamWhite, fontSize: 20 }]}>Nie masz konta? </Text>
@@ -198,10 +212,6 @@ const styles = StyleSheet.create({
     loginBtn: {
         marginTop: 20,
         height: 50,
-    },
-    forgotPass: {
-        marginTop: 20,
-        height: 35,
     },
     registerLink: {
         color: colors.royalBlue,
