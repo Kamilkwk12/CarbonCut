@@ -15,9 +15,9 @@ const w = Dimensions.get("window").width;
 const h = "100%";
 
 const Login = ({ navigation }) => {
-    const [login, getLogin] = useState();
-    const [password, getPassword] = useState();
-    const [isHidden, setHide] = useState(true);
+    let [login, getLogin] = useState();
+    let [password, getPassword] = useState();
+    let [isHidden, setHide] = useState(true);
 
     SplashScreen.preventAutoHideAsync();
 
@@ -43,7 +43,6 @@ const Login = ({ navigation }) => {
         }
     };
 
-    const formBgUri = "../assets/formBg.png";
 
     const bgUri = "../assets/bgLogin.png";
     const logoUri = "../assets/captionLogoWhite.png";
