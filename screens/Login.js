@@ -134,11 +134,6 @@ export default Login;
 
 const colors = {
     background: "#1f1f1f",
-    backgroundDark: "#181818",
-    topPanel: "#181818",
-    green: "#489A2E",
-    lightGreen: "#77ba97",
-    tomatoRed: "#BC4749",
     creamWhite: "#E8E5DA",
     royalBlue: "#48639C",
 };

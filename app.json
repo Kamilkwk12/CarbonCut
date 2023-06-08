@@ -35,6 +35,9 @@
         "scss",
         "sass"
       ]
-    }
+    },
+    "plugins": [
+      "@react-native-firebase/app"
+    ]
   }
 }

@@ -1,22 +1,20 @@
 import React, { useState, useCallback } from "react";
-import { ImageBackground, Text, View, StyleSheet, Dimensions, Image, TextInput, Pressable, Alert } from "react-native";
+import { ImageBackground, Text, View, StyleSheet, Dimensions, Image, TextInput, Pressable, Alert, FlatList } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Picker } from "@react-native-picker/picker";
+import { collection, onSnapshot, addDoc } from "firebase/firestore";
+import { db } from "../FirebaseSetup";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
 
-const Register = ({navigation}) => {
-    let [login, getLogin] = useState();
-    let [password, getPassword] = useState();
-    let [gender, getGender] = useState();
-    let [name, getName] = useState();
-    let [surname, getSurname] = useState();
-    let [isHidden, setHide] = useState(true);
+const Register = ({ navigation }) => {
+    const [user, setUser] = useState({ name: "", surname: "", gender: "M", login: "", password: "" });
+    const [isHidden, setHide] = useState(true);
 
     SplashScreen.preventAutoHideAsync();
 
@@ -35,22 +33,40 @@ const Register = ({navigation}) => {
     }
 
     const validate = () => {
-        if (
-            login === undefined ||
-            login == "" ||
-            password == "" ||
-            password === undefined ||
-            gender === undefined ||
-            gender == "" ||
-            name === undefined ||
-            name == "" ||
-            surname === undefined ||
-            surname == ""
-        ) {
-            Alert.alert("Błąd", "Uzupełnij wszystkie pola");
-        } else {
-            navigation.navigate("Login");
+        if (user.name.trim().length === 0) {
+            Alert.alert("Błąd", "Wypełnij pole 'imię'");
+            return;
         }
+        if (user.surname.trim().length === 0) {
+            Alert.alert("Błąd", "Wypełnij pole 'nazwisko'");
+            return;
+        }
+        if (user.login.trim().length === 0) {
+            Alert.alert("Błąd", "Wypełnij pole 'login'");
+            return;
+        }
+        if (user.password.trim().length === 0) {
+            Alert.alert("Błąd", "Wypełnij pole 'hasło'");
+            return;
+        }
+        try {
+            addUser();
+        } catch (error) {
+            Alert.alert('Error: ', error.message);
+            return;
+        }
+        navigation.navigate("RegisterComplete");
+    };
+
+    const addUser = () => {
+        const userDb = collection(db, "users");
+        addDoc(userDb, {
+            name: user.name,
+            surname: user.surname,
+            login: user.login,
+            password: user.password,
+            gender: user.gender,
+        });
     };
 
     const uriBg = "../assets/bgRegister.png";
@@ -64,16 +80,16 @@ const Register = ({navigation}) => {
                     <TextInput
                         editable
                         style={[styles.input, { flex: 1 }]}
-                        value={name}
-                        onChangeText={name => getName(name)}
+                        value={user.name}
+                        onChangeText={text => setUser({ ...user, name: text })}
                         placeholder="Imię"
                         placeholderTextColor={colors.grayAlpha}
                     />
                     <TextInput
                         editable
                         style={[styles.input, { flex: 1 }]}
-                        value={surname}
-                        onChangeText={surname => getSurname(surname)}
+                        value={user.surname}
+                        onChangeText={text => setUser({ ...user, surname: text })}
                         placeholder="Nazwisko"
                         placeholderTextColor={colors.grayAlpha}
                     />
@@ -81,8 +97,8 @@ const Register = ({navigation}) => {
                 <View style={{ width: w - 80, borderBottomColor: "white", borderBottomWidth: 2 }}>
                     <Picker
                         mode="dropdown"
-                        selectedValue={gender}
-                        onValueChange={gender => getGender(gender)}
+                        selectedValue={user.gender}
+                        onValueChange={symbol => setUser({ ...user, gender: symbol })}
                         style={styles.picker}
                         dropdownIconColor={"white"}
                     >
@@ -94,8 +110,8 @@ const Register = ({navigation}) => {
                     <TextInput
                         editable
                         style={[styles.input, { flex: 1 }]}
-                        value={login}
-                        onChangeText={login => getLogin(login)}
+                        value={user.login}
+                        onChangeText={text => setUser({ ...user, login: text })}
                         placeholder="Login"
                         placeholderTextColor={colors.grayAlpha}
                     />
@@ -104,9 +120,9 @@ const Register = ({navigation}) => {
                     <TextInput
                         editable
                         style={[styles.input]}
-                        value={password}
-                        onChangeText={password => getPassword(password)}
-                        placeholder="Password"
+                        value={user.password}
+                        onChangeText={password => setUser({ ...user, password: password })}
+                        placeholder="Hasło"
                         placeholderTextColor={colors.grayAlpha}
                         secureTextEntry={isHidden ? true : false}
                     />
@@ -132,12 +148,7 @@ export default Register;
 const colors = {
     background: "#1f1f1f",
     backgroundDark: "#181818",
-    topPanel: "#181818",
-    green: "#489A2E",
-    lightGreen: "#77ba97",
-    tomatoRed: "#BC4749",
     creamWhite: "#E8E5DA",
-    royalBlue: "#48639C",
     grayAlpha: `rgba(255, 255, 255, 0.5)`,
 };
 
