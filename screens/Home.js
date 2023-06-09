@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useCallback } from "react";
 import { StyleSheet, Text, View, Pressable, StatusBar, Image, ToastAndroid, Dimensions, ImageBackground, FlatList, ScrollView } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
@@ -8,11 +8,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { PieChart } from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCar, faBars, faLeaf, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { logedInUser } from "./Login";
+import { storage } from "../FirebaseSetup";
+import { getDownloadURL, ref } from "firebase/storage";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
 
 const Home = () => {
+    const [profImg, setProfImg] = useState(null);
+
     SplashScreen.preventAutoHideAsync();
 
     const [fontsLoaded] = useFonts({
@@ -29,13 +34,53 @@ const Home = () => {
         return null;
     }
 
+    const onPress = () => {
+        console.log(logedInUser);
+    };
+
+    const getProfImg = () => {
+        const imageRef = ref(storage, "/prof" + logedInUser.login + ".jpg");
+
+        try {
+            getDownloadURL(imageRef).then(url => {
+                console.log(url);
+                setProfImg(url);
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    let dafaultImageUrl = "../assets/noImage.png";
     const bgUri = "../assets/bgMain.png";
+    const bgTopPanel = "../assets/captionLogoWhite10p.png";
+    const name = logedInUser.name;
+    const surname = logedInUser.surname;
 
     return (
-        <View onLayout={onLayoutRootView}>
+        <View
+            onLayout={() => {
+                onLayoutRootView();
+                getProfImg();
+            }}
+        >
             <StatusBar />
             <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
-                <TopPanel />
+                <View>
+                    <ImageBackground source={require(bgTopPanel)} style={styles.topPanel}>
+                        <Pressable style={styles.userPressable} onPress={onPress}>
+                            <LinearGradient colors={[colors.green, "white"]} style={styles.imgBg} start={[0.1, 0.5]}>
+                                <Image source={profImg !== null ? { uri: profImg } : require(dafaultImageUrl)} style={styles.img}></Image>
+                            </LinearGradient>
+                            <View>
+                                <Text style={[styles.topPanelText, styles.greeting, styles.nova]}>Witaj,</Text>
+                                <Text style={[styles.topPanelText, styles.userName, styles.nova]}>
+                                    {name} {surname}
+                                </Text>
+                            </View>
+                        </Pressable>
+                    </ImageBackground>
+                </View>
                 <ScrollView contentContainerStyle={{ alignItems: "center" }}>
                     <UsageChart />
                     <Activity />
@@ -50,30 +95,6 @@ const Home = () => {
 };
 
 export default Home;
-
-const TopPanel = () => {
-    const onPress = () => {
-        ToastAndroid.show("Kliknięto panel użytkownika!", ToastAndroid.SHORT);
-    };
-    const uri = "../assets/captionLogoWhite10p.png";
-    const profUri = "../assets/prof.jpg";
-    const userName = "Kamil Kwiatkowski";
-    return (
-        <View>
-            <ImageBackground source={require(uri)} style={styles.topPanel}>
-                <Pressable style={styles.userPressable} onPress={onPress}>
-                    <LinearGradient colors={[colors.green, "white"]} style={styles.imgBg} start={[0.1, 0.5]}>
-                        <Image source={require(profUri)} style={styles.img}></Image>
-                    </LinearGradient>
-                    <View>
-                        <Text style={[styles.topPanelText, styles.greeting, styles.nova]}>Witaj,</Text>
-                        <Text style={[styles.topPanelText, styles.userName, styles.nova]}>{userName}</Text>
-                    </View>
-                </Pressable>
-            </ImageBackground>
-        </View>
-    );
-};
 
 const UsageChart = () => {
     const chartConfig = {

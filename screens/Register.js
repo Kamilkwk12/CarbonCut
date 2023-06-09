@@ -6,15 +6,19 @@ import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Picker } from "@react-native-picker/picker";
-import { collection, onSnapshot, addDoc } from "firebase/firestore";
+import * as ImagePicker from "expo-image-picker";
+import { collection, addDoc } from "firebase/firestore";
 import { db } from "../FirebaseSetup";
+import { storage } from "../FirebaseSetup";
+import { ref, uploadBytes } from "firebase/storage";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
 
 const Register = ({ navigation }) => {
-    const [user, setUser] = useState({ name: "", surname: "", gender: "M", login: "", password: "" });
+    const [user, setUser] = useState({ name: "", surname: "", gender: "M", login: "", password: "", profUri: "" });
     const [isHidden, setHide] = useState(true);
+    const [image, setImage] = useState(null);
 
     SplashScreen.preventAutoHideAsync();
 
@@ -28,6 +32,7 @@ const Register = ({ navigation }) => {
             await SplashScreen.hideAsync();
         }
     }, [fontsLoaded]);
+
     if (!fontsLoaded) {
         return null;
     }
@@ -50,9 +55,10 @@ const Register = ({ navigation }) => {
             return;
         }
         try {
+            uploadImage();
             addUser();
         } catch (error) {
-            Alert.alert('Error: ', error.message);
+            Alert.alert("Error: ", error.message);
             return;
         }
         navigation.navigate("RegisterComplete");
@@ -66,16 +72,69 @@ const Register = ({ navigation }) => {
             login: user.login,
             password: user.password,
             gender: user.gender,
+            profImage: "prof" + user.login + ".jpg",
         });
+    };
+
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+            alert("Potrzebujemy dostępu do galerii w celu wykonania tej czynności");
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+        }
+    };
+
+    const uploadImage = async () => {
+        const storageRef = ref(storage, "/prof" + user.login + ".jpg");
+
+        const getBlobFromUri = async uri => {
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = function (e) {
+                    reject(new TypeError("Network request failed"));
+                };
+                xhr.responseType = "blob";
+                xhr.open("GET", uri, true);
+                xhr.send(null);
+            });
+
+            return blob;
+        };
+
+        const imageBlob = await getBlobFromUri(image);
+        try {
+            uploadBytes(storageRef, imageBlob);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const uriBg = "../assets/bgRegister.png";
     const logoUri = "../assets/captionLogoWhite.png";
+    const defaultImage = "../assets/noImage.png";
     return (
         <View onLayout={onLayoutRootView}>
             <ImageBackground source={require(uriBg)} style={styles.bg}>
                 <Image source={require(logoUri)} style={styles.mainLogo} resizeMode="contain" />
                 <Text style={[styles.nova, styles.registerTitle]}>Zarejestruj się</Text>
+                <Pressable onPress={pickImage}>
+                    <Image source={image !== null ? { uri: image } : require(defaultImage)} style={styles.imagePicker} resizeMode="contain" />
+                </Pressable>
                 <View style={{ flexDirection: "row", paddingHorizontal: 30 }}>
                     <TextInput
                         editable
@@ -211,6 +270,12 @@ const styles = StyleSheet.create({
         width: w - 80,
         height: 50,
         marginTop: 30,
+        borderRadius: 50,
+    },
+    imagePicker: {
+        marginTop: 20,
+        width: 100,
+        height: 100,
         borderRadius: 50,
     },
 });

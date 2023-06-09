@@ -12,6 +12,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
+export let logedInUser = [];
 
 const Login = ({ navigation }) => {
     const [userCredentials, setUserCredentials] = useState({ login: "", password: "" });
@@ -26,7 +27,6 @@ const Login = ({ navigation }) => {
             let usersList = [];
             snapshot.docs.map(doc => usersList.push({ ...doc.data(), id: doc.id }));
             setUserDb(usersList);
-
             setLoading(false);
         });
     }, []);
@@ -51,6 +51,7 @@ const Login = ({ navigation }) => {
         const result = userDb.find(({ login }) => login === userCredentials.login);
         if (result !== undefined) {
             if (result.password === userCredentials.password) {
+                logedInUser = result;
                 navigation.navigate("Home");
             } else {
                 Alert.alert("Błąd", "Nieprawidłowe hasło");
