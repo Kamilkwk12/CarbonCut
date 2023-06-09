@@ -124,7 +124,7 @@ const Login = ({ navigation }) => {
 
 const SocialURLButton = ({ url, socialType }) => {
     const handlePress = useCallback(async () => {
-        const supported = await Linking.canOpenURL(url);
+        const supported = await Linking.canOpenURL(url); //sprawdzić na bulidzie jak to działa
 
         if (supported) {
             await Linking.openURL(url);

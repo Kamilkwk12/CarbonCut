@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
-import { StyleSheet, Text, View, Pressable, StatusBar, Image, ToastAndroid, Dimensions, ImageBackground, FlatList, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Pressable, StatusBar, Image, Dimensions, ImageBackground, FlatList, ScrollView } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
@@ -11,11 +11,12 @@ import { faCar, faBars, faLeaf, faPlus } from "@fortawesome/free-solid-svg-icons
 import { logedInUser } from "./Login";
 import { storage } from "../FirebaseSetup";
 import { getDownloadURL, ref } from "firebase/storage";
+import { getEmissions } from "../api/apiHandler";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
 
-const Home = () => {
+const Home = ({ navigation }) => {
     const [profImg, setProfImg] = useState(null);
 
     SplashScreen.preventAutoHideAsync();
@@ -35,7 +36,7 @@ const Home = () => {
     }
 
     const onPress = () => {
-        console.log(logedInUser);
+        getEmissions({ type: "meat", value: 1 });
     };
 
     const getProfImg = () => {
@@ -51,57 +52,16 @@ const Home = () => {
         }
     };
 
-    let dafaultImageUrl = "../assets/noImage.png";
-    const bgUri = "../assets/bgMain.png";
-    const bgTopPanel = "../assets/captionLogoWhite10p.png";
-    const name = logedInUser.name;
-    const surname = logedInUser.surname;
+    const g = "M";
+    const Gender = g => {
+        return g === "M" ? "e" : "a";
+    };
 
-    return (
-        <View
-            onLayout={() => {
-                onLayoutRootView();
-                getProfImg();
-            }}
-        >
-            <StatusBar />
-            <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
-                <View>
-                    <ImageBackground source={require(bgTopPanel)} style={styles.topPanel}>
-                        <Pressable style={styles.userPressable} onPress={onPress}>
-                            <LinearGradient colors={[colors.green, "white"]} style={styles.imgBg} start={[0.1, 0.5]}>
-                                <Image source={profImg !== null ? { uri: profImg } : require(dafaultImageUrl)} style={styles.img}></Image>
-                            </LinearGradient>
-                            <View>
-                                <Text style={[styles.topPanelText, styles.greeting, styles.nova]}>Witaj,</Text>
-                                <Text style={[styles.topPanelText, styles.userName, styles.nova]}>
-                                    {name} {surname}
-                                </Text>
-                            </View>
-                        </Pressable>
-                    </ImageBackground>
-                </View>
-                <ScrollView contentContainerStyle={{ alignItems: "center" }}>
-                    <UsageChart />
-                    <Activity />
-                    <Activity />
-                    <Activity />
-                </ScrollView>
-                <View style={{ height: 90 }}></View>
-                <NavBar />
-            </ImageBackground>
-        </View>
-    );
-};
-
-export default Home;
-
-const UsageChart = () => {
     const chartConfig = {
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
     };
 
-    const data = [
+    const sampleData = [
         {
             name: "Seoul",
             population: 120,
@@ -132,33 +92,93 @@ const UsageChart = () => {
         },
     ];
 
-    const g = "M";
-    const Gender = g => {
-        return g === "M" ? "e" : "a";
-    };
-
     const carbonUsage = "340,6";
+    let dafaultImageUrl = "../assets/noImage.png";
+    const bgUri = "../assets/bgMain.png";
+    const bgTopPanel = "../assets/captionLogoWhite10p.png";
+    const name = logedInUser.name;
+    const surname = logedInUser.surname;
 
     return (
-        <View style={styles.chartView}>
-            <Text style={[styles.chartHeader, styles.nova]}>W tym miesiącu wygenerował{Gender(g)}ś</Text>
-            <Text style={[styles.chartSummary, styles.monoton]}>
-                {carbonUsage}KG CO<Text style={{ fontSize: 28 }}>2</Text>
-            </Text>
+        <View
+            onLayout={() => {
+                onLayoutRootView();
+                getProfImg();
+            }}
+        >
+            <StatusBar />
+            <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
+                <View>
+                    <ImageBackground source={require(bgTopPanel)} style={styles.topPanel}>
+                        <Pressable style={styles.userPressable} onPress={onPress}>
+                            <LinearGradient colors={[colors.green, "white"]} style={styles.imgBg} start={[0.1, 0.5]}>
+                                <Image source={profImg !== null ? { uri: profImg } : require(dafaultImageUrl)} style={styles.img}></Image>
+                            </LinearGradient>
+                            <View>
+                                <Text style={[styles.topPanelText, styles.greeting, styles.nova]}>Witaj,</Text>
+                                <Text style={[styles.topPanelText, styles.userName, styles.nova]}>
+                                    {name} {surname}
+                                </Text>
+                            </View>
+                        </Pressable>
+                    </ImageBackground>
+                </View>
 
-            <PieChart
-                data={data}
-                width={w}
-                height={220}
-                chartConfig={chartConfig}
-                accessor={"population"}
-                backgroundColor={"transparent"}
-                center={[10, 10]}
-                absolute
-            />
+                <ScrollView contentContainerStyle={{ alignItems: "center" }}>
+                    <View style={styles.chartView}>
+                        <Text style={[styles.chartHeader, styles.nova]}>W tym miesiącu wygenerował{Gender(g)}ś</Text>
+                        <Text style={[styles.chartSummary, styles.monoton]}>
+                            {carbonUsage}KG CO<Text style={{ fontSize: 28 }}>2</Text>
+                        </Text>
+
+                        <PieChart
+                            data={sampleData}
+                            width={w}
+                            height={220}
+                            chartConfig={chartConfig}
+                            accessor={"population"}
+                            backgroundColor={"transparent"}
+                            center={[10, 10]}
+                            absolute
+                        />
+                    </View>
+                    <Activity />
+                    <Activity />
+                    <Activity />
+                </ScrollView>
+
+                <View style={{ height: 90 }}></View>
+
+                <View style={styles.navBar}>
+                    <Pressable>
+                        <FontAwesomeIcon icon={faBars} size={30} color={colors.creamWhite} />
+                    </Pressable>
+                    <Pressable
+                        onPress={() => {
+                            navigation.navigate("ActivityType");
+                        }}
+                        style={{ alignItems: "center", bottom: 20 }}
+                    >
+                        <LinearGradient
+                            colors={[colors.green, colors.background]}
+                            style={styles.addBtn}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1.4 }}
+                        >
+                            <FontAwesomeIcon icon={faPlus} size={40} color={colors.creamWhite} />
+                        </LinearGradient>
+                        <Text style={[styles.addBtnText, styles.nova]}>Dodaj aktywność</Text>
+                    </Pressable>
+                    <Pressable>
+                        <FontAwesomeIcon icon={faLeaf} size={30} color={colors.creamWhite} />
+                    </Pressable>
+                </View>
+            </ImageBackground>
         </View>
     );
 };
+
+export default Home;
 
 const Activity = () => {
     return (
@@ -174,25 +194,6 @@ const Activity = () => {
                 </Pressable>
             </ImageBackground>
         </LinearGradient>
-    );
-};
-
-const NavBar = () => {
-    return (
-        <View style={styles.navBar}>
-            <Pressable>
-                <FontAwesomeIcon icon={faBars} size={30} color={colors.creamWhite} />
-            </Pressable>
-            <Pressable style={{ alignItems: "center", bottom: 20 }}>
-                <LinearGradient colors={[colors.green, colors.background]} style={styles.addBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1.4 }}>
-                    <FontAwesomeIcon icon={faPlus} size={40} color={colors.creamWhite} />
-                </LinearGradient>
-                <Text style={[styles.addBtnText, styles.nova]}>Dodaj aktywność</Text>
-            </Pressable>
-            <Pressable>
-                <FontAwesomeIcon icon={faLeaf} size={30} color={colors.creamWhite} />
-            </Pressable>
-        </View>
     );
 };
 
