@@ -6,6 +6,7 @@ import Register from "./screens/Register"
 import Home from "./screens/Home";
 import RegisterComplete from "./screens/RegisterComplete";
 import ActivityType from "./screens/ActivityType";
+import ActivityAdded from "./screens/ActivityAdded";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
                 <Stack.Screen name="RegisterComplete" component={RegisterComplete} />
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="ActivityType" component={ActivityType} />
+                <Stack.Screen name="ActivityAdded" component={ActivityAdded} />
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -36,7 +36,7 @@ const Home = ({ navigation }) => {
     }
 
     const onPress = () => {
-        getEmissions({ type: "meat", value: 1 });
+        
     };
 
     const getProfImg = () => {
@@ -44,7 +44,6 @@ const Home = ({ navigation }) => {
 
         try {
             getDownloadURL(imageRef).then(url => {
-                console.log(url);
                 setProfImg(url);
             });
         } catch (error) {

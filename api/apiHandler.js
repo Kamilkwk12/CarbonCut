@@ -5,7 +5,7 @@ export const getEmissions = async ({ type, value }) => {
         try {
             const response = await fetch("https://beta4.api.climatiq.io/estimate", {
                 method: "POST",
-                headers: { Authorization: "Bearer RY5PBFCTCB4ZZPH5CR7CDKP5KP50", "Content-Type": "application/json" },
+                headers: { Authorization: "Bearer 8CCF61RBSW4KQKK37XACMN245KWT", "Content-Type": "application/json" },
                 body: JSON.stringify({
                     emission_factor: {
                         activity_id: "passenger_vehicle-vehicle_type_car-fuel_source_na-engine_size_na-vehicle_age_na-vehicle_weight_na",
@@ -22,8 +22,7 @@ export const getEmissions = async ({ type, value }) => {
                 }),
             });
             const json = await response.json();
-            emission = json;
-            console.log(emission);
+            return json;
         } catch (e) {
             console.log(e);
         }
@@ -44,7 +43,7 @@ export const getEmissions = async ({ type, value }) => {
         try {
             const response = await fetch("https://beta4.api.climatiq.io/estimate", {
                 method: "POST",
-                headers: { Authorization: "Bearer RY5PBFCTCB4ZZPH5CR7CDKP5KP50", "Content-Type": "application/json" },
+                headers: { Authorization: "Bearer 8CCF61RBSW4KQKK37XACMN245KWT", "Content-Type": "application/json" },
                 body: JSON.stringify({
                     emission_factor: {
                         activity_id: "consumer_goods-type_meat_products_beef",
@@ -61,8 +60,7 @@ export const getEmissions = async ({ type, value }) => {
                 }),
             });
             const json = await response.json();
-            emission = json;
-            console.log(emission);
+            return json;
         } catch (e) {
             console.log(e);
         }

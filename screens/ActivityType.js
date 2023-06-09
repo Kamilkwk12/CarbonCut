@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCar, faChevronLeft, faDrumstickBite } from "@fortawesome/free-solid-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { getEmissions } from "../api/apiHandler";
+import { db } from "../FirebaseSetup";
+import { addDoc, collection, doc } from "firebase/firestore";
+import { logedInUser } from "./Login";
 
 const w = Dimensions.get("window").width;
 const h = "100%";
@@ -31,11 +34,40 @@ export default ActivityType = ({ navigation }) => {
         return null;
     }
 
-    const handlePress = (type) => {
+    const handlePress = async type => {
         if (type == "car") {
-            getEmissions({ type: type, value: distance });
-        }else if (type == "meat") {
-            getEmissions({ type: type, value: cost });
+            try {
+                let request = await getEmissions({ type: type, value: distance });
+                const ref = collection(db, "users", logedInUser.id, "usageData");
+                console.log(ref);
+                let date = new Date().toLocaleDateString();
+                addDoc(ref, {
+                    activityId: "carDriving",
+                    category: "transport",
+                    distance: request.activity_data.activity_value,
+                    emissions: request.co2e,
+                    date: date,
+                });
+                navigation.navigate("ActivityAdded");
+            } catch (error) {
+                console.log(error);
+            }
+        } else if (type == "meat") {
+            try {
+                let request = await getEmissions({ type: type, value: cost });
+                const ref = collection(db, "users", logedInUser.id, "usageData")
+                let date = new Date().toLocaleDateString();
+                addDoc(ref, {
+                    activityId: "meatConsumption",
+                    category: "consumption",
+                    cost: request.activity_data.activity_value,
+                    emissions: request.co2e,
+                    date: date,
+                });
+                navigation.navigate("ActivityAdded");
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 
