@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "new",
-    "slug": "new",
+    "name": "CarbonCut",
+    "slug": "carboncut",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -46,7 +46,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "0ebfb71d-9c8c-41c7-824f-63ec61a811c7"
+        "projectId": "34700fbb-5292-4be4-bb29-ee67aa6e91a0"
       }
     }
   }
