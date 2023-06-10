@@ -16,7 +16,7 @@ const w = Dimensions.get("window").width;
 const h = "100%";
 
 const Register = ({ navigation }) => {
-    const [user, setUser] = useState({ name: "", surname: "", gender: "M", login: "", password: "", profUri: "" });
+    const [user, setUser] = useState({ name: "", surname: "", login: "", password: "", profUri: "" });
     const [isHidden, setHide] = useState(true);
     const [image, setImage] = useState(null);
 
@@ -71,7 +71,6 @@ const Register = ({ navigation }) => {
             surname: user.surname,
             login: user.login,
             password: user.password,
-            gender: user.gender,
             profImage: "prof" + user.login + ".jpg",
         });
     };
@@ -152,18 +151,6 @@ const Register = ({ navigation }) => {
                         placeholder="Nazwisko"
                         placeholderTextColor={colors.grayAlpha}
                     />
-                </View>
-                <View style={{ width: w - 80, borderBottomColor: "white", borderBottomWidth: 2 }}>
-                    <Picker
-                        mode="dropdown"
-                        selectedValue={user.gender}
-                        onValueChange={symbol => setUser({ ...user, gender: symbol })}
-                        style={styles.picker}
-                        dropdownIconColor={"white"}
-                    >
-                        <Picker.Item label="Mężczyzna" value="M" />
-                        <Picker.Item label="Kobieta" value="W" />
-                    </Picker>
                 </View>
                 <View style={{ flexDirection: "row", paddingHorizontal: 30 }}>
                     <TextInput

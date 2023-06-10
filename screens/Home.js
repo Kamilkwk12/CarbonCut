@@ -21,7 +21,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import { PieChart } from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCar, faLeaf, faPlus, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faCar, faLeaf, faPlus, faArrowRightFromBracket, faDrumstickBite } from "@fortawesome/free-solid-svg-icons";
 import { logedInUser } from "./Login";
 import { db, storage } from "../FirebaseSetup";
 import { getDownloadURL, ref } from "firebase/storage";
@@ -41,7 +41,6 @@ const Home = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [usageDb, setUsageDb] = useState([]);
     const [chartData, setChartData] = useState();
-    const [g, setG] = useState("e");
 
     const getProfImg = useEffect(() => {
         setLoading(true);
@@ -65,14 +64,6 @@ const Home = ({ navigation }) => {
             setUsageDb(dataList);
         });
         setLoading(false);
-    }, []);
-
-    const Gender = useEffect(() => {
-        if (logedInUser.gender === "M") {
-            setG("e");
-        } else {
-            setG("a");
-        }
     }, []);
 
     const getEmissionsByCategory = useEffect(() => {
@@ -120,7 +111,9 @@ const Home = ({ navigation }) => {
         return null;
     }
 
-    const onPress = () => {};
+    const onPress = () => {
+        console.log(usageDb);
+    };
 
     const totalUsage = () => {
         let usage = 0;
@@ -174,7 +167,7 @@ const Home = ({ navigation }) => {
 
                 <ScrollView contentContainerStyle={{ alignItems: "center" }}>
                     <View style={styles.chartView}>
-                        <Text style={[styles.chartHeader, styles.nova]}>W tym miesiącu wygenerował{g}ś</Text>
+                        <Text style={[styles.chartHeader, styles.nova]}>Twój ślad węglowy wynosi</Text>
                         <Text style={[styles.chartSummary, styles.monoton]}>
                             {carbonUsage}KG CO<Text style={{ fontSize: 28 }}>2</Text>
                         </Text>
@@ -184,13 +177,9 @@ const Home = ({ navigation }) => {
                         ) : (
                             <>
                                 <PieChart data={chartData} width={w} height={220} chartConfig={chartConfig} accessor={"usage"} center={[10, 10]} />
-                                <FlatList
-                                    data={usageDb}
-                                    renderItem={Activity}
-                                    keyExtractor={item => item.id}
-                                    horizontal={true}
-                                    style={{ flexDirection: "column" }}
-                                />
+                                {usageDb.map(({ id, category, date, distance, activityId, cost }) => (
+                                    <Activity key={id} category={category} date={date} distance={distance} activityId={activityId} cost={cost} />
+                                ))}
                             </>
                         )}
                     </View>
@@ -238,16 +227,22 @@ const Home = ({ navigation }) => {
 
 export default Home;
 
-const Activity = () => {
+const Activity = ({ category, date, distance, activityId, cost }) => {
     return (
         <LinearGradient style={styles.activityBorder} colors={[colors.green, colors.background, "white"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
             <ImageBackground blurRadius={12}>
                 <Pressable style={styles.activity} opacity={0.95}>
-                    <FontAwesomeIcon icon={faCar} color={colors.creamWhite} size={50} />
-                    <View style={styles.ativityText}>
-                        <Text style={[styles.activityTitle, styles.nova]}>JAZDA AUTEM/PALIWO</Text>
-                        <Text style={[styles.activityDetails, styles.nova]}>Przejechano 15km - 3l paliwa</Text>
-                        <Text style={[styles.activityDate, styles.nova]}>Dzisiaj 15:53</Text>
+                    {activityId == "carDriving" ? (
+                        <FontAwesomeIcon icon={faCar} color={colors.creamWhite} size={50} style={styles.activityIcon} />
+                    ) : (
+                        <FontAwesomeIcon icon={faDrumstickBite} color={colors.creamWhite} size={50} style={styles.activityIcon} />
+                    )}
+                    <View style={{ marginLeft: 10 }}>
+                        <Text style={[styles.activityTitle, styles.nova]}>
+                            {activityId == "carDriving" ? `Jazda autem - ${distance} km` : `Spożycie mięsa`}
+                        </Text>
+                        <Text style={[styles.activityDetails, styles.nova]}>Kategoria: {category == "transport" ? "Transport" : "Żywność"}</Text>
+                        <Text style={[styles.activityDate, styles.nova]}>{date}</Text>
                     </View>
                 </Pressable>
             </ImageBackground>
@@ -330,11 +325,13 @@ const styles = StyleSheet.create({
     chartHeader: {
         color: "white",
         fontSize: 20,
+        textAlign: "center",
     },
 
     chartSummary: {
         color: "white",
         fontSize: 46,
+        textAlign: "center",
     },
     activityBorder: {
         borderRadius: 14,
@@ -349,7 +346,6 @@ const styles = StyleSheet.create({
     activity: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-around",
         margin: 2,
         backgroundColor: colors.backgroundDark,
         width: w - 50,
@@ -359,14 +355,19 @@ const styles = StyleSheet.create({
     },
     activityIcon: {
         colors: colors.creamWhite,
+        margin: 20,
     },
     activityTitle: {
+        marginVertical: 2,
+        fontSize: 18,
         color: "white",
     },
     activityDetails: {
+        marginVertical: 2,
         color: "white",
     },
     activityDate: {
+        marginVertical: 2,
         color: "#979797",
     },
     navBar: {
