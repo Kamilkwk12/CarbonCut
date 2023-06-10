@@ -20,7 +20,14 @@ const Login = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [isHidden, setHide] = useState(true);
 
-    useEffect(() => {
+    SplashScreen.preventAutoHideAsync();
+
+    const [fontsLoaded] = useFonts({
+        Monoton_400Regular,
+        NovaRound_400Regular,
+    });
+
+    const getUserList = useEffect(() => {
         setLoading(true);
         const usersQuery = collection(db, "users");
         onSnapshot(usersQuery, snapshot => {
@@ -30,13 +37,6 @@ const Login = ({ navigation }) => {
             setLoading(false);
         });
     }, []);
-
-    SplashScreen.preventAutoHideAsync();
-
-    const [fontsLoaded] = useFonts({
-        Monoton_400Regular,
-        NovaRound_400Regular,
-    });
 
     const onLayoutRootView = useCallback(async () => {
         if (fontsLoaded) {

@@ -1,10 +1,9 @@
 import { useCallback } from "react";
-import { View, Text, Pressable, ImageBackground, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Pressable, ImageBackground, StyleSheet } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 
-const w = Dimensions.get("window").width;
 const h = "100%";
 
 export default ActivityAdded = ({ navigation }) => {
@@ -45,10 +44,7 @@ export default ActivityAdded = ({ navigation }) => {
 
 const colors = {
     background: "#1f1f1f",
-    backgroundDark: "#181818",
     creamWhite: "#E8E5DA",
-    grayAlpha: `rgba(255, 255, 255, 0.5)`,
-    green: "#489A2E",
 };
 
 const styles = StyleSheet.create({
