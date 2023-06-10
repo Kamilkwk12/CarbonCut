@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, ImageBackground, StyleSheet, Dimensions, StatusBar, Pressable, TextInput } from "react-native";
+import { View, Text, ImageBackground, StyleSheet, Dimensions, StatusBar, Pressable, TextInput, ActivityIndicator } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
@@ -8,7 +8,7 @@ import { faCar, faChevronLeft, faDrumstickBite } from "@fortawesome/free-solid-s
 import { LinearGradient } from "expo-linear-gradient";
 import { getEmissions } from "../api/apiHandler";
 import { db } from "../FirebaseSetup";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { logedInUser } from "./Login";
 
 const w = Dimensions.get("window").width;
@@ -17,6 +17,7 @@ const h = "100%";
 export default ActivityType = ({ navigation }) => {
     const [distance, setDistance] = useState();
     const [cost, setCost] = useState("");
+    const [loading, setLoading] = useState(false);
 
     SplashScreen.preventAutoHideAsync();
 
@@ -35,6 +36,7 @@ export default ActivityType = ({ navigation }) => {
     }
 
     const handlePress = async type => {
+        setLoading(true);
         if (type == "car") {
             try {
                 let request = await getEmissions({ type: type, value: distance });
@@ -48,14 +50,17 @@ export default ActivityType = ({ navigation }) => {
                     emissions: request.co2e,
                     date: date,
                 });
+                setLoading(false);
                 navigation.navigate("ActivityAdded");
             } catch (error) {
                 console.log(error);
+                setLoading(false);
+                navigation.navigate("Home");
             }
         } else if (type == "meat") {
             try {
                 let request = await getEmissions({ type: type, value: cost });
-                const ref = collection(db, "users", logedInUser.id, "usageData")
+                const ref = collection(db, "users", logedInUser.id, "usageData");
                 let date = new Date().toLocaleDateString();
                 addDoc(ref, {
                     activityId: "meatConsumption",
@@ -65,8 +70,11 @@ export default ActivityType = ({ navigation }) => {
                     date: date,
                 });
                 navigation.navigate("ActivityAdded");
+                setLoading(false);
             } catch (error) {
                 console.log(error);
+                navigation.navigate("Home");
+                setLoading(false);
             }
         }
     };
@@ -76,80 +84,86 @@ export default ActivityType = ({ navigation }) => {
     return (
         <View onLayout={onLayoutRootView}>
             <ImageBackground source={require(bgUri)} style={styles.bg}>
-                <Pressable
-                    onPress={() => {
-                        navigation.navigate("Home");
-                    }}
-                    style={styles.return}
-                >
-                    <FontAwesomeIcon icon={faChevronLeft} size={30} style={{ color: "white" }} />
-                </Pressable>
-                <StatusBar />
-                <View style={{ marginHorizontal: 40, marginTop: 50 }}>
-                    <Text style={[styles.nova, styles.heading]}>Wybierz aktywność</Text>
-                    <LinearGradient colors={[colors.green, "white"]} style={styles.border} start={[0.1, 0.5]}>
-                        <View style={styles.activity}>
-                            <View style={{ flexDirection: "row" }}>
-                                <FontAwesomeIcon icon={faCar} size={40} style={styles.icon} />
-                                <View>
-                                    <Text style={[styles.cardHeading, styles.nova]}>Jazda samochodem</Text>
-                                    <Text style={[{ color: colors.grayAlpha }, styles.nova]} s>
-                                        Kategoria: Transport
-                                    </Text>
-                                </View>
-                            </View>
+                {!loading ? (
+                    <>
+                        <Pressable
+                            onPress={() => {
+                                navigation.navigate("Home");
+                            }}
+                            style={styles.return}
+                        >
+                            <FontAwesomeIcon icon={faChevronLeft} size={30} style={{ color: "white" }} />
+                        </Pressable>
+                        <StatusBar />
+                        <View style={{ marginHorizontal: 40, marginTop: 50 }}>
+                            <Text style={[styles.nova, styles.heading]}>Wybierz aktywność</Text>
+                            <LinearGradient colors={[colors.green, "white"]} style={styles.border} start={[0.1, 0.5]}>
+                                <View style={styles.activity}>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <FontAwesomeIcon icon={faCar} size={40} style={styles.icon} />
+                                        <View>
+                                            <Text style={[styles.cardHeading, styles.nova]}>Jazda samochodem</Text>
+                                            <Text style={[{ color: colors.grayAlpha }, styles.nova]} s>
+                                                Kategoria: Transport
+                                            </Text>
+                                        </View>
+                                    </View>
 
-                            <TextInput
-                                editable
-                                placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
-                                placeholder="Przejechany dystans (km)"
-                                style={styles.input}
-                                inputMode={"numeric"}
-                                value={distance}
-                                onChangeText={text => setDistance(text)}
-                            />
-                            <Pressable
-                                style={styles.submit}
-                                onPress={() => {
-                                    handlePress("car", distance);
-                                }}
-                            >
-                                <Text style={[styles.nova, { fontSize: 18 }]}>Dodaj</Text>
-                            </Pressable>
-                        </View>
-                    </LinearGradient>
-                    <LinearGradient colors={[colors.green, "white"]} style={styles.border} start={[0.1, 0.5]}>
-                        <View style={styles.activity}>
-                            <View style={{ flexDirection: "row" }}>
-                                <FontAwesomeIcon icon={faDrumstickBite} size={40} style={styles.icon} />
-                                <View>
-                                    <Text style={[styles.cardHeading, styles.nova]}>Spożycie mięsa</Text>
-                                    <Text style={[{ color: colors.grayAlpha }, styles.nova]} s>
-                                        Kategoria: Żywność
-                                    </Text>
+                                    <TextInput
+                                        editable
+                                        placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
+                                        placeholder="Przejechany dystans (km)"
+                                        style={styles.input}
+                                        inputMode={"numeric"}
+                                        value={distance}
+                                        onChangeText={text => setDistance(text)}
+                                    />
+                                    <Pressable
+                                        style={styles.submit}
+                                        onPress={() => {
+                                            handlePress("car", distance);
+                                        }}
+                                    >
+                                        <Text style={[styles.nova, { fontSize: 18 }]}>Dodaj</Text>
+                                    </Pressable>
                                 </View>
-                            </View>
+                            </LinearGradient>
+                            <LinearGradient colors={[colors.green, "white"]} style={styles.border} start={[0.1, 0.5]}>
+                                <View style={styles.activity}>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <FontAwesomeIcon icon={faDrumstickBite} size={40} style={styles.icon} />
+                                        <View>
+                                            <Text style={[styles.cardHeading, styles.nova]}>Spożycie mięsa</Text>
+                                            <Text style={[{ color: colors.grayAlpha }, styles.nova]} s>
+                                                Kategoria: Żywność
+                                            </Text>
+                                        </View>
+                                    </View>
 
-                            <TextInput
-                                editable
-                                placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
-                                placeholder="Koszt (PLN)"
-                                style={styles.input}
-                                inputMode={"numeric"}
-                                value={cost}
-                                onChangeText={text => setCost(text)}
-                            />
-                            <Pressable
-                                style={styles.submit}
-                                onPress={() => {
-                                    handlePress("meat", cost);
-                                }}
-                            >
-                                <Text style={[styles.nova, { fontSize: 18 }]}>Dodaj</Text>
-                            </Pressable>
+                                    <TextInput
+                                        editable
+                                        placeholderTextColor={`rgba(255, 255, 255, 0.5)`}
+                                        placeholder="Koszt (PLN)"
+                                        style={styles.input}
+                                        inputMode={"numeric"}
+                                        value={cost}
+                                        onChangeText={text => setCost(text)}
+                                    />
+                                    <Pressable
+                                        style={styles.submit}
+                                        onPress={() => {
+                                            handlePress("meat", cost);
+                                        }}
+                                    >
+                                        <Text style={[styles.nova, { fontSize: 18 }]}>Dodaj</Text>
+                                    </Pressable>
+                                </View>
+                            </LinearGradient>
                         </View>
-                    </LinearGradient>
-                </View>
+                    </>
+                ) : (
+                    <ActivityIndicator size={"large"} style={{ width: 100, height: 100, margin: "auto" }} />
+                )}
             </ImageBackground>
         </View>
     );

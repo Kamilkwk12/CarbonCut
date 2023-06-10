@@ -1,20 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
-import {
-    StyleSheet,
-    Text,
-    View,
-    Pressable,
-    StatusBar,
-    Image,
-    Dimensions,
-    ImageBackground,
-    FlatList,
-    ScrollView,
-    ActivityIndicator,
-    LogBox,
-    SectionList,
-} from "react-native";
+import { StyleSheet, Text, View, Pressable, StatusBar, Image, Dimensions, ImageBackground, ScrollView, ActivityIndicator } from "react-native";
 import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import * as SplashScreen from "expo-splash-screen";
@@ -25,7 +11,7 @@ import { faCar, faLeaf, faPlus, faArrowRightFromBracket, faDrumstickBite } from 
 import { logedInUser } from "./Login";
 import { db, storage } from "../FirebaseSetup";
 import { getDownloadURL, ref } from "firebase/storage";
-import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { round } from "lodash";
 
 const w = Dimensions.get("window").width;
@@ -111,10 +97,6 @@ const Home = ({ navigation }) => {
         return null;
     }
 
-    const onPress = () => {
-        console.log(usageDb);
-    };
-
     const totalUsage = () => {
         let usage = 0;
         usageDb.forEach(item => {
@@ -145,7 +127,7 @@ const Home = ({ navigation }) => {
             <ImageBackground source={require(bgUri)} style={styles.treeBg} imageStyle={{ opacity: 0.2 }}>
                 <View>
                     <ImageBackground source={require(bgTopPanel)} style={styles.topPanel}>
-                        <Pressable style={styles.userPressable} onPress={onPress}>
+                        <View style={styles.userView}>
                             <LinearGradient colors={[colors.green, "white"]} style={styles.imgBg} start={[0.1, 0.5]}>
                                 {loading ? (
                                     <View style={styles.img}>
@@ -161,7 +143,7 @@ const Home = ({ navigation }) => {
                                     {name} {surname}
                                 </Text>
                             </View>
-                        </Pressable>
+                        </View>
                     </ImageBackground>
                 </View>
 
@@ -169,7 +151,7 @@ const Home = ({ navigation }) => {
                     <View style={styles.chartView}>
                         <Text style={[styles.chartHeader, styles.nova]}>Twój ślad węglowy wynosi</Text>
                         <Text style={[styles.chartSummary, styles.monoton]}>
-                            {carbonUsage}KG CO<Text style={{ fontSize: 28 }}>2</Text>
+                            {carbonUsage} KG CO<Text style={{ fontSize: 28 }}>2</Text>
                         </Text>
 
                         {carbonUsage == 0 ? (
@@ -216,7 +198,11 @@ const Home = ({ navigation }) => {
                         </LinearGradient>
                         <Text style={[styles.addBtnText, styles.nova]}>Dodaj aktywność</Text>
                     </Pressable>
-                    <Pressable>
+                    <Pressable
+                        onPress={() => {
+                            navigation.navigate("Environment");
+                        }}
+                    >
                         <FontAwesomeIcon icon={faLeaf} size={30} color={colors.creamWhite} />
                     </Pressable>
                 </View>
@@ -313,7 +299,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
 
-    userPressable: {
+    userView: {
         flexDirection: "row",
         alignItems: "center",
     },

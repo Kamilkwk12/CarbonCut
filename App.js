@@ -7,7 +7,7 @@ import Home from "./screens/Home";
 import RegisterComplete from "./screens/RegisterComplete";
 import ActivityType from "./screens/ActivityType";
 import ActivityAdded from "./screens/ActivityAdded";
-
+import Environment from "./screens/Environment";
 const Stack = createNativeStackNavigator();
 
 const stackOptionStyle = {
@@ -25,6 +25,7 @@ export default function App() {
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="ActivityType" component={ActivityType} />
                 <Stack.Screen name="ActivityAdded" component={ActivityAdded} />
+                <Stack.Screen name="Environment" component={Environment} />
             </Stack.Navigator>
         </NavigationContainer>
     );

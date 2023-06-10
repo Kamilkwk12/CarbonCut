@@ -123,15 +123,9 @@ const Login = ({ navigation }) => {
 };
 
 const SocialURLButton = ({ url, socialType }) => {
-    const handlePress = useCallback(async () => {
-        const supported = await Linking.canOpenURL(url); //sprawdzić na bulidzie jak to działa
-
-        if (supported) {
-            await Linking.openURL(url);
-        } else {
-            Alert.alert(`Brak wspieranej aplikacji do otwarcia linku: ${url}`);
-        }
-    }, [url]);
+    const handlePress = async () => {
+        await Linking.openURL(url);
+    };
 
     return (
         <Pressable onPress={handlePress}>

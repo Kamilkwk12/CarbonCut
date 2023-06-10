@@ -5,7 +5,6 @@ import { useFonts, Monoton_400Regular } from "@expo-google-fonts/monoton";
 import { NovaRound_400Regular } from "@expo-google-fonts/nova-round";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../FirebaseSetup";
@@ -52,6 +51,10 @@ const Register = ({ navigation }) => {
         }
         if (user.password.trim().length === 0) {
             Alert.alert("Błąd", "Wypełnij pole 'hasło'");
+            return;
+        }
+        if (user.password.trim().length < 6) {
+            Alert.alert("Błąd", "Hasło powinno zawierać conajmniej 6 znaków'");
             return;
         }
         try {
